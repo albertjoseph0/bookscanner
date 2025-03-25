@@ -7,6 +7,7 @@ BookScanner is a web application that allows you to scan your bookshelf and auto
 - **AI-Powered Book Recognition**: Upload images of your bookshelf to automatically identify books
 - **Digital Collection Management**: View, sort, and manage your growing book collection
 - **Intuitive User Interface**: Simple interface for scanning and organizing books
+- **Security Features**: API rate limiting, request validation, and security headers
 - **Responsive Design**: Works on desktop and mobile devices
 
 ## Tech Stack
@@ -15,6 +16,7 @@ BookScanner is a web application that allows you to scan your bookshelf and auto
 - **Backend**: Node.js & Express
 - **Database**: SQLite
 - **AI Integration**: OpenAI GPT-4o Vision API
+- **Security**: Helmet, express-rate-limit, express-validator
 
 ## Project Structure
 
@@ -28,14 +30,16 @@ bookscanner/
 │   │   └── env.js        # Environment variables
 │   ├── controllers/      # Route handlers
 │   │   └── bookController.js
+│   ├── middleware/       # Middleware functions
+│   │   ├── errorHandler.js
+│   │   ├── security.js   # Security middleware
+│   │   └── validation.js # Input validation
 │   ├── models/           # Database models
 │   │   └── Book.js
 │   ├── routes/           # API routes
 │   │   └── bookRoutes.js
 │   ├── services/         # Business logic
 │   │   └── openaiService.js
-│   ├── middleware/       # Custom middleware
-│   │   └── errorHandler.js
 │   ├── uploads/          # Temporary storage for uploads
 │   ├── .env              # Environment variables
 │   ├── books.db          # SQLite database
@@ -84,6 +88,7 @@ bookscanner/
    ```
    OPENAI_API_KEY=your_openai_api_key_here
    PORT=3001
+   NODE_ENV=development
    ```
 
    In the `frontend/.env` file:
@@ -140,6 +145,40 @@ The application will be available at:
 - `GET /api/books` - Get all books in the collection
 - `POST /api/scan` - Upload and process a bookshelf image
 - `DELETE /api/books/:id` - Delete a book by ID
+
+### Security Features
+
+BookScanner implements several security measures to protect against abuse:
+
+1. **API Rate Limiting**:
+   - Global limit: 100 requests per 15 minutes per IP address
+   - Scan endpoint limit: 10 requests per hour per IP address
+
+2. **Input Validation**:
+   - File uploads are validated for type, size, and content
+   - Route parameters are validated for proper format
+   - Request bodies are validated for required fields
+
+3. **Security Headers**:
+   - Content Security Policy to prevent XSS attacks
+   - Protection against clickjacking
+   - XSS protection headers
+
+4. **Error Handling**:
+   - Sanitized error messages in production
+   - No leakage of sensitive information
+   - Proper HTTP status codes
+
+5. **CORS Protection**:
+   - Restricted to known frontend origins
+   - Limited HTTP methods
+   - Limited allowed headers
+
+6. **File Upload Security**:
+   - Size limits (5MB max)
+   - Type validation (images only)
+   - Secure filename generation
+   - Automatic cleanup after processing
 
 ## Future Improvements
 

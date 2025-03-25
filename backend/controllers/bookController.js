@@ -4,14 +4,14 @@ const OpenAIService = require('../services/openaiService');
 const fs = require('fs');
 const path = require('path');
 
-let db; // Will be initialized in setup
+let dbAdapter; // Will be initialized in setup
 
 /**
  * Set up the controller with database connection
- * @param {Object} database - Database connection
+ * @param {Object} adapter - Database adapter
  */
-function setup(database) {
-  db = database;
+function setup(adapter) {
+  dbAdapter = adapter;
 }
 
 /**
@@ -21,7 +21,7 @@ function setup(database) {
  */
 async function getAllBooks(req, res) {
   try {
-    const books = await db.all('SELECT * FROM books ORDER BY dateAdded DESC');
+    const books = await dbAdapter.query('SELECT * FROM books ORDER BY dateAdded DESC');
     res.json(books);
   } catch (error) {
     console.error('Error fetching books:', error);
@@ -73,7 +73,7 @@ async function processBookshelfImage(req, res) {
           author: bookData.author
         });
         
-        await db.run(
+        await dbAdapter.execute(
           'INSERT INTO books (bookId, title, author) VALUES (?, ?, ?)',
           [book.bookId, book.title, book.author]
         );
@@ -113,7 +113,7 @@ async function processBookshelfImage(req, res) {
 async function deleteBook(req, res) {
   try {
     const { id } = req.params;
-    await db.run('DELETE FROM books WHERE bookId = ?', id);
+    await dbAdapter.execute('DELETE FROM books WHERE bookId = ?', [id]);
     res.json({ success: true });
   } catch (error) {
     console.error('Error deleting book:', error);

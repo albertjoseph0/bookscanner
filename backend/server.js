@@ -1,11 +1,11 @@
-// server.js - Express server with SQLite integration
+// server.js - Express server with database integration
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
-// Import database and controllers
-const { initializeDatabase } = require('./config/db');
+// Import database adapter and controllers
+const { createAdapter } = require('./config/db-adapter');
 const bookRoutes = require('./routes/bookRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const bookController = require('./controllers/bookController');
@@ -77,33 +77,41 @@ app.use(errorHandler);
 // Start the server
 async function startServer() {
   try {
-    // Initialize database
-    const db = await initializeDatabase();
+    // Log database type being used
+    const dbType = process.env.USE_AZURE_DB === 'true' ? 'Azure SQL' : 'SQLite';
+    console.log(`Using database: ${dbType}`);
     
-    // Pass database connection to controllers
-    bookController.setup(db);
+    // Initialize database adapter
+    const dbAdapter = await createAdapter();
+    
+    // Pass database adapter to controllers
+    bookController.setup(dbAdapter);
     
     // Start listening
     app.listen(port, () => {
       console.log(`Server running on port ${port}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
     });
+    
+    // Setup graceful shutdown to close database
+    const shutdown = async () => {
+      console.log('Closing database connections...');
+      if (dbAdapter) {
+        await dbAdapter.close();
+      }
+      console.log('Server shutting down');
+      process.exit(0);
+    };
+    
+    // Graceful shutdown handlers
+    process.on('SIGTERM', shutdown);
+    process.on('SIGINT', shutdown);
+    
   } catch (err) {
     console.error('Failed to start server:', err);
     process.exit(1);
   }
 }
-
-// Graceful shutdown handling
-process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received: closing HTTP server');
-  process.exit(0);
-});
-
-process.on('SIGINT', () => {
-  console.log('SIGINT signal received: closing HTTP server');
-  process.exit(0);
-});
 
 // Start server if this file is run directly
 if (require.main === module) {

@@ -15,8 +15,8 @@ function App() {
   const fetchBooks = async () => {
     try {
       setLoading(true);
-      // We'll update this URL later when we deploy our Azure Function
-      const response = await fetch('http://localhost:7071/api/books');
+      // Updated API URL to point to our local Express server
+      const response = await fetch('http://localhost:3001/api/books');
       const data = await response.json();
       setBooks(data);
       setLoading(false);
@@ -41,14 +41,20 @@ function App() {
 
     try {
       setLoading(true);
-      // We'll update this URL later when we deploy our Azure Function
-      const response = await fetch('http://localhost:7071/api/scan', {
+      // Updated API URL to point to our local Express server
+      const response = await fetch('http://localhost:3001/api/scan', {
         method: 'POST',
         body: formData,
       });
       
       const result = await response.json();
-      alert(`Detected ${result.length} books!`);
+      
+      // Updated to match our new API response format
+      if (result.success) {
+        alert(`Detected ${result.books.length} books!`);
+      } else {
+        alert('Error processing image');
+      }
       
       // Refresh the book list
       fetchBooks();
@@ -74,8 +80,8 @@ function App() {
 
   const handleDelete = async (bookId) => {
     try {
-      // We'll update this URL later when we deploy our Azure Function
-      await fetch(`http://localhost:7071/api/books/${bookId}`, {
+      // Updated API URL to point to our local Express server
+      await fetch(`http://localhost:3001/api/books/${bookId}`, {
         method: 'DELETE',
       });
       

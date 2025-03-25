@@ -14,7 +14,7 @@ BookScanner is a web application that allows you to scan your bookshelf and auto
 
 - **Frontend**: React
 - **Backend**: Node.js & Express
-- **Database**: SQLite
+- **Database**: SQLite (local) or Azure SQL Database (cloud)
 - **AI Integration**: OpenAI GPT-4o Vision API
 - **Security**: Helmet, express-rate-limit, express-validator
 
@@ -84,11 +84,18 @@ bookscanner/
 
 3. Set up environment variables:
    
-   In the `backend/.env` file:
+   Copy the example environment file in the backend:
+   ```
+   cd backend
+   cp .env.example .env
+   ```
+   
+   Then update the `.env` file with your settings:
    ```
    OPENAI_API_KEY=your_openai_api_key_here
    PORT=3001
    NODE_ENV=development
+   USE_AZURE_DB=false  # Set to true to use Azure SQL Database
    ```
 
    In the `frontend/.env` file:
@@ -179,6 +186,39 @@ BookScanner implements several security measures to protect against abuse:
    - Type validation (images only)
    - Secure filename generation
    - Automatic cleanup after processing
+
+## Database Configuration
+
+### Azure SQL Database Setup
+
+The application supports both SQLite (default) and Azure SQL Database. To use Azure SQL:
+
+1. Create an Azure SQL Database in the Azure Portal
+2. Copy `.env.example` to `.env` in the backend directory
+3. Update the following variables in your `.env` file:
+   ```
+   USE_AZURE_DB=true
+   AZURE_SQL_SERVER=your-server.database.windows.net
+   AZURE_SQL_DATABASE=your-database-name
+   AZURE_SQL_USER=your-username
+   AZURE_SQL_PASSWORD=your-password
+   ```
+
+4. Migrate your existing data (optional):
+   ```
+   cd backend
+   npm run migrate
+   ```
+
+5. Run the application with Azure SQL:
+   ```
+   npm run use:azure
+   ```
+
+To switch back to SQLite, set `USE_AZURE_DB=false` in your `.env` file or run:
+```
+npm run use:sqlite
+```
 
 ## Future Improvements
 

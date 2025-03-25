@@ -4,40 +4,60 @@ BookScanner is a web application that allows you to scan your bookshelf and auto
 
 ## Features
 
-- **Bookshelf Scanning**: Upload images of your bookshelf and use AI to identify books
-- **Book Collection**: View and manage your growing book collection
-- **Sorting**: Sort your books by title, author, or date added
-- **Book Management**: Easily remove books from your collection
+- **AI-Powered Book Recognition**: Upload images of your bookshelf to automatically identify books
+- **Digital Collection Management**: View, sort, and manage your growing book collection
+- **Intuitive User Interface**: Simple interface for scanning and organizing books
+- **Responsive Design**: Works on desktop and mobile devices
 
-## Technical Stack
+## Tech Stack
 
 - **Frontend**: React
-- **Backend**: Node.js with Express
+- **Backend**: Node.js & Express
 - **Database**: SQLite
-- **AI Vision**: OpenAI GPT-4o Vision API
+- **AI Integration**: OpenAI GPT-4o Vision API
 
 ## Project Structure
 
+The project follows a modern, modular architecture:
+
 ```
 bookscanner/
-├── backend/              # Backend server code
-│   ├── server.js         # Express server
+├── backend/
+│   ├── config/           # Configuration files
+│   │   ├── db.js         # Database connection
+│   │   └── env.js        # Environment variables
+│   ├── controllers/      # Route handlers
+│   │   └── bookController.js
+│   ├── models/           # Database models
+│   │   └── Book.js
+│   ├── routes/           # API routes
+│   │   └── bookRoutes.js
+│   ├── services/         # Business logic
+│   │   └── openaiService.js
+│   ├── middleware/       # Custom middleware
+│   │   └── errorHandler.js
+│   ├── uploads/          # Temporary storage for uploads
+│   ├── .env              # Environment variables
 │   ├── books.db          # SQLite database
-│   ├── uploads/          # Temporary storage for uploaded images
-│   └── .env              # Environment variables
-├── frontend/             # React frontend code
+│   └── server.js         # Entry point
+├── frontend/
 │   ├── public/           # Static assets
-│   └── src/              # React source code
-└── start.sh              # Script to start both servers
+│   ├── src/
+│   │   ├── components/   # Reusable UI components
+│   │   ├── hooks/        # Custom React hooks
+│   │   ├── services/     # API client
+│   │   └── App.js        # Main application component
+│   ├── .env              # Environment variables
+│   └── package.json      # Dependencies and scripts
+└── start.sh              # Startup script
 ```
 
-## Setup Instructions
+## Getting Started
 
 ### Prerequisites
 
-- Node.js (v14 or higher)
-- NPM (v6 or higher)
-- An OpenAI API key with access to the GPT-4o model
+- Node.js v14+ and npm
+- An OpenAI API key with access to GPT-4o Vision models
 
 ### Installation
 
@@ -47,43 +67,43 @@ bookscanner/
    cd bookscanner
    ```
 
-2. Install dependencies for both frontend and backend:
+2. Install dependencies:
    ```
-   cd frontend
+   # Install backend dependencies
+   cd backend
    npm install
-   cd ../backend
+
+   # Install frontend dependencies
+   cd ../frontend
    npm install
    ```
 
-3. Configure environment variables:
-   - Create a `.env` file in the `backend` directory if it doesn't exist
-   - Add your OpenAI API key:
-     ```
-     OPENAI_API_KEY=your_openai_api_key_here
-     PORT=3001
-     ```
+3. Set up environment variables:
+   
+   In the `backend/.env` file:
+   ```
+   OPENAI_API_KEY=your_openai_api_key_here
+   PORT=3001
+   ```
+
+   In the `frontend/.env` file:
+   ```
+   REACT_APP_API_URL=http://localhost:3001/api
+   ```
 
 ### Running the Application
 
-Use the provided start script to run both the frontend and backend servers:
+Use the provided start script to launch both frontend and backend:
 
 ```
 ./start.sh
 ```
 
-Or run them separately:
-
-1. Start the backend server:
-   ```
-   cd backend
-   node server.js
-   ```
-
-2. In a separate terminal, start the frontend server:
-   ```
-   cd frontend
-   npm start
-   ```
+This script will:
+1. Kill any processes running on ports 3000 and 3001
+2. Start the backend server
+3. Start the frontend development server
+4. Clean up processes when you're done
 
 The application will be available at:
 - Frontend: http://localhost:3000
@@ -91,22 +111,44 @@ The application will be available at:
 
 ## Usage
 
-1. Open the application in your browser at http://localhost:3000
-2. Click "Choose File" to select an image of your bookshelf
-3. Click "Scan Bookshelf" to analyze the image
-4. View your detected books in the collection section
-5. Sort books using the sort controls
-6. Remove books with the "Remove" button
+1. **Scan Books**:
+   - Click "Choose File" to select an image of your bookshelf
+   - Click "Scan Bookshelf" to process the image
+   - The AI will identify book titles and authors and add them to your collection
 
-## API Endpoints
+2. **Manage Collection**:
+   - View all your books in the "Your Book Collection" section
+   - Sort books by title, author, or date added
+   - Remove books with the "Remove" button
+
+## Development
+
+### Key Components
+
+- **Frontend**:
+  - `useBooks` hook manages book data and API interactions
+  - Component-based architecture for maintainability
+  - API service for backend communication
+
+- **Backend**:
+  - RESTful API for book management
+  - OpenAI integration for image processing
+  - SQLite for data persistence
+
+### API Endpoints
 
 - `GET /api/books` - Get all books in the collection
 - `POST /api/scan` - Upload and process a bookshelf image
 - `DELETE /api/books/:id` - Delete a book by ID
 
-## Troubleshooting
+## Future Improvements
 
-- If the app isn't working, make sure both servers are running correctly
-- Check the console for any error messages
-- Verify your OpenAI API key is correct and has access to GPT-4o
-- Make sure ports 3000 and 3001 are available
+- Add user authentication
+- Implement book categories/tags
+- Add search functionality
+- Enable book metadata editing
+- Support for exporting/importing book collections
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

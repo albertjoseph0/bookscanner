@@ -18,33 +18,10 @@ const port = process.env.PORT || 3001;
 // Apply security middleware (but disable CSP for development)
 app.use(securityHeaders);
 
-// Configure CORS to allow requests from all development origins
-const allowedOrigins = process.env.NODE_ENV === 'production'
-  ? [process.env.FRONTEND_URL || 'https://yourproductiondomain.com']
-  : ['http://localhost:3000', 'http://localhost:3002', 'http://127.0.0.1:3000', 'http://127.0.0.1:3002'];
-
+// Configure CORS to allow requests from all origins
 app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, etc.)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) === -1) {
-      console.log(`CORS blocked request from: ${origin}`);
-    }
-    
-    // In development, allow all origins for easier testing
-    if (process.env.NODE_ENV !== 'production') {
-      return callback(null, true);
-    }
-    
-    // In production, check against allowed origins
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      return callback(null, true);
-    } else {
-      return callback(new Error('CORS policy: Origin not allowed'), false);
-    }
-  },
-  methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+  origin: '*',
+  methods: ['GET', 'POST', 'DELETE', 'OPTIONS', 'PUT', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));

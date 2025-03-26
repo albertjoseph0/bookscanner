@@ -8,27 +8,12 @@ const helmet = require('helmet');
 
 // Set up basic security headers with helmet, but less strict in development
 const securityHeaders = (() => {
-  // In development mode, use a more relaxed CSP to allow local development
-  if (process.env.NODE_ENV !== 'production') {
-    return helmet({
-      contentSecurityPolicy: false, // Disable CSP in development
-      crossOriginEmbedderPolicy: false, // Disable COEP in development
-      crossOriginOpenerPolicy: false, // Disable COOP in development
-      crossOriginResourcePolicy: false, // Disable CORP in development
-    });
-  }
-  
-  // In production, use strict CSP
+  // Disable all cross-origin policies to prevent CORS issues
   return helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", "data:", "blob:"],
-        connectSrc: ["'self'", "*.openai.com"],
-      },
-    },
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginOpenerPolicy: false,
+    crossOriginResourcePolicy: false
   });
 })();
 
